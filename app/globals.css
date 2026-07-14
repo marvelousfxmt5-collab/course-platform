@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #141414;
+  --paper: #fafaf7;
+  --accent: #2f6f4f;
+  --accent-dark: #234f38;
+  --muted: #6b6b63;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
