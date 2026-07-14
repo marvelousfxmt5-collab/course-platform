@@ -42,7 +42,6 @@ export default function PaymentSuccessPage() {
         return
       }
 
-      // Webhook can take a few seconds to arrive — poll briefly
       if (attempts < 8) {
         setTimeout(checkStatus, 1500)
       } else {
@@ -57,17 +56,17 @@ export default function PaymentSuccessPage() {
     <main className="flex min-h-screen items-center justify-center px-6 text-center">
       <div className="max-w-sm">
         {status === 'checking' && (
-          <>
-            <h1 className="text-xl font-semibold">Confirming your payment…</h1>
+          <div>
+            <h1 className="text-xl font-semibold">Confirming your payment</h1>
             <p className="mt-2 text-sm text-[var(--muted)]">
               This usually takes just a few seconds.
             </p>
-          </>
+          </div>
         )}
 
         {status === 'success' && (
-          <>
-            <h1 className="text-2xl font-bold text-[var(--accent)]">You're in 🎉</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--accent)]">You're in</h1>
             <p className="mt-2 text-[var(--muted)]">
               Your payment was confirmed. Your course is ready.
             </p>
@@ -77,15 +76,15 @@ export default function PaymentSuccessPage() {
             >
               Go to course
             </Link>
-          </>
+          </div>
         )}
 
         {status === 'pending' && (
-          <>
+          <div>
             <h1 className="text-xl font-semibold">Still confirming</h1>
             <p className="mt-2 text-sm text-[var(--muted)]">
               Your payment may still be processing. Refresh this page in a minute,
-              or check your dashboard — it'll unlock automatically once confirmed.
+              or check your dashboard, it will unlock automatically once confirmed.
             </p>
             <Link
               href="/dashboard"
@@ -93,16 +92,27 @@ export default function PaymentSuccessPage() {
             >
               Check dashboard
             </Link>
-          </>
+          </div>
         )}
 
         {status === 'error' && (
-          <>
+          <div>
             <h1 className="text-xl font-semibold">Please log in</h1>
             <p className="mt-2 text-sm text-[var(--muted)]">
-              We couldn't verify who you are. Log in to check your payment status.
+              We could not verify who you are. Log in to check your payment status.
             </p>
             <Link
+              href="/login"
+              className="focus-ring mt-6 inline-block rounded-full bg-[var(--accent)] px-6 py-3 font-semibold text-white"
+            >
+              Log in
+            </Link>
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}            <Link
               href="/login"
               className="focus-ring mt-6 inline-block rounded-full bg-[var(--accent)] px-6 py-3 font-semibold text-white"
             >
