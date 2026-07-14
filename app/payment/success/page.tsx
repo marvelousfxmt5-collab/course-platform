@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -103,6 +105,15 @@ export default function PaymentSuccessPage() {
             <Link
               href="/login"
               className="focus-ring mt-6 inline-block rounded-full bg-[var(--accent)] px-6 py-3 font-semibold text-white"
+            >
+              Log in
+            </Link>
+          </>
+        )}
+      </div>
+    </main>
+  )
+}              className="focus-ring mt-6 inline-block rounded-full bg-[var(--accent)] px-6 py-3 font-semibold text-white"
             >
               Log in
             </Link>
