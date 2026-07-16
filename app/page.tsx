@@ -1,108 +1,84 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
-import PricingCard from '@/components/PricingCard'
-
-const MODULE_TITLES = [
-  'Introduction',
-  'Getting Started',
-  'Core Concepts',
-  'Deep Dive',
-  'Practical Example',
-  'Advanced Topics',
-  'Case Study',
-  'Common Mistakes',
-  'Putting It Together',
-  'Conclusion & Next Steps',
-]
+import ProductSheet from '@/components/ProductSheet'
 
 export default async function LandingPage() {
   const supabase = createClient()
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const courseName = process.env.NEXT_PUBLIC_COURSE_NAME || 'Course Name Here'
-  const description =
-    process.env.NEXT_PUBLIC_COURSE_DESCRIPTION ||
-    'A short, compelling description of what students get.'
+  const { data: products } = await supabase
+    .from('products')
+    .select(`
+      id, slug, name, description, price_ngn, price_usd, order_index,
+      modules ( id, title, order_index, videos ( id ) )
+    `)
+    .order('order_index', { ascending: true })
 
   return (
-    <main className="min-h-screen">
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-5 md:px-12">
-        <span className="text-sm font-semibold tracking-wide uppercase text-[var(--muted)]">
-          {courseName}
-        </span>
+    <main className="min-h-screen bg-[var(--charcoal)] text-[var(--paper)]">
+      <nav className="flex items-center justify-between border-b border-[var(--line)] px-6 py-7 md:px-12">
+        <div className="font-display text-lg font-bold uppercase tracking-widest">
+          Bizzyaski <span className="text-[var(--oxblood-bright)]">Academy</span>
+        </div>
         {user ? (
           <Link
             href="/dashboard"
-            className="focus-ring rounded-full border border-[var(--ink)] px-4 py-1.5 text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors"
+            className="focus-ring border border-[var(--paper)] px-5 py-2 text-xs font-medium uppercase tracking-widest hover:bg-[var(--paper)] hover:text-[var(--charcoal)] transition-colors"
           >
-            Go to dashboard
+            My Courses
           </Link>
         ) : (
           <Link
             href="/login"
-            className="focus-ring rounded-full border border-[var(--ink)] px-4 py-1.5 text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors"
+            className="focus-ring border border-[var(--paper)] px-5 py-2 text-xs font-medium uppercase tracking-widest hover:bg-[var(--paper)] hover:text-[var(--charcoal)] transition-colors"
           >
-            Log in
+            Log In
           </Link>
         )}
       </nav>
 
-      {/* Hero */}
-      <section className="px-6 pt-10 pb-16 md:px-12 md:pt-16 md:pb-24">
-        <div className="max-w-3xl">
-          <p className="mb-4 text-sm font-medium uppercase tracking-widest text-[var(--accent)]">
-            10 lessons · ~35 min each · Watch anytime
-          </p>
-          <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
-            {courseName}
-          </h1>
-          <p className="mt-6 max-w-xl text-lg text-[var(--muted)] leading-relaxed">
-            {description}
-          </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="#pricing"
-              className="focus-ring rounded-full bg-[var(--accent)] px-7 py-3.5 text-base font-semibold text-white hover:bg-[var(--accent-dark)] transition-colors"
-            >
-              Get instant access
-            </Link>
-            <span className="text-sm text-[var(--muted)]">
-              One payment. Yours for good.
-            </span>
-          </div>
+      <section className="max-w-3xl px-6 pb-16 pt-20 md:px-12 md:pb-20 md:pt-24">
+        <span className="mb-4 block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ochre)]">
+          Professional Certification Training
+        </span>
+        <h1 className="font-display text-5xl font-bold uppercase leading-[0.98] tracking-wide md:text-7xl">
+          Learn the craft.
+          <br />
+          Build the trade.
+        </h1>
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--muted)]">
+          Masterclass video training in tattooing, piercing, and laser removal —
+          built by working artists, for the next generation of the trade.
+        </p>
+      </section>
+
+      <section className="px-6 pb-24 md:px-12">
+        <div className="mb-8 flex items-center gap-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+          The Catalog
+          <span className="h-px flex-1 bg-[var(--line)]" />
+        </div>
+
+        <div className="grid grid-cols-1 gap-px border border-[var(--line)] bg-[var(--line)] md:grid-cols-2">
+          {products?.map((product, i) => (
+            <ProductSheet
+              key={product.id}
+              product={product}
+              index={i + 1}
+              isLoggedIn={!!user}
+            />
+          ))}
         </div>
       </section>
 
-      {/* Course spine — signature element: the 10 modules laid out
-          along a single horizontal progress line */}
-      <section className="border-y border-black/10 bg-black/[0.02] px-6 py-14 md:px-12">
-        <h2 className="mb-10 text-sm font-semibold uppercase tracking-widest text-[var(--muted)]">
-          What's inside
-        </h2>
-        <div className="relative">
-          <div
-            aria-hidden
-            className="absolute left-0 right-0 top-4 hidden h-px bg-[var(--ink)]/15 md:block"
-          />
-          <ol className="grid gap-x-6 gap-y-8 md:grid-cols-5">
-            {MODULE_TITLES.map((title, i) => (
-              <li key={title} className="relative">
-                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--ink)] text-xs font-semibold text-[var(--paper)]">
-                  {i + 1}
-                </div>
-                <p className="text-sm font-medium leading-snug">{title}</p>
-                <p className="mt-1 text-xs text-[var(--muted)]">~35 min</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section id="pricing" className="px-6 py-20 md:px-12">
+      <footer className="border-t border-[var(--line)] px-6 py-8 text-center text-xs text-[var(--muted)] md:px-12">
+        © {new Date().getFullYear()} Bizzyaski Academy
+      </footer>
+    </main>
+  )
+}      <section id="pricing" className="px-6 py-20 md:px-12">
         <div className="mx-auto max-w-md">
           <h2 className="mb-2 text-center text-2xl font-bold">
             One price. Full access.
