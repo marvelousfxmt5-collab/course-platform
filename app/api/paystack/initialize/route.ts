@@ -1,12 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
-import { createAdminClient } from '@/lib/supabase-server'
-
-// Paystack works in the smallest currency unit (kobo for NGN, cents for USD)
-const PRICES = {
-  NGN: Number(process.env.NEXT_PUBLIC_COURSE_PRICE_NGN) * 100,
-  USD: Number(process.env.NEXT_PUBLIC_COURSE_PRICE_USD) * 100,
-}
+import { createClient, createAdminClient } from '@/lib/supabase-server'
 
 export async function POST(request: Request) {
   const supabase = createClient()
@@ -21,18 +14,36 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => ({}))
   const currency: 'NGN' | 'USD' = body.currency === 'USD' ? 'USD' : 'NGN'
-  const amount = PRICES[currency]
+  const productSlug: string | undefined = body.productSlug
+
+  if (!productSlug) {
+    return NextResponse.json({ error: 'productSlug is required' }, { status: 400 })
+  }
+
+  const admin = createAdminClient()
+
+  const { data: product, error: productError } = await admin
+    .from('products')
+    .select('id, price_ngn, price_usd, is_active')
+    .eq('slug', productSlug)
+    .single()
+
+  if (productError || !product || !product.is_active) {
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+  }
+
+  const amount =
+    currency === 'NGN' ? product.price_ngn * 100 : product.price_usd * 100
 
   if (!amount || amount <= 0) {
     return NextResponse.json({ error: 'Invalid price configuration' }, { status: 500 })
   }
 
-  // Prevent double purchase
-  const admin = createAdminClient()
   const { data: existing } = await admin
     .from('purchases')
     .select('id')
     .eq('user_id', user.id)
+    .eq('product_id', product.id)
     .eq('status', 'success')
     .maybeSingle()
 
@@ -40,11 +51,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'You already own this course' }, { status: 400 })
   }
 
-  const reference = `course_${user.id.slice(0, 8)}_${Date.now()}`
+  const reference = `${productSlug}_${user.id.slice(0, 8)}_${Date.now()}`
 
-  // Record a pending purchase before redirecting to Paystack
   const { error: insertError } = await admin.from('purchases').insert({
     user_id: user.id,
+    product_id: product.id,
     status: 'pending',
     amount,
     currency,
@@ -67,7 +78,7 @@ export async function POST(request: Request) {
       currency,
       reference,
       callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/payment/success`,
-      metadata: { user_id: user.id },
+      metadata: { user_id: user.id, product_slug: productSlug },
     }),
   })
 
@@ -83,4 +94,4 @@ export async function POST(request: Request) {
   return NextResponse.json({
     authorization_url: paystackData.data.authorization_url,
   })
-    }
+}
