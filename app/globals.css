@@ -2,21 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Archivo:wght@400;500;600&display=swap');
+
 :root {
-  --ink: #141414;
-  --paper: #fafaf7;
-  --accent: #2f6f4f;
-  --accent-dark: #234f38;
-  --muted: #6b6b63;
+  --charcoal: #1c1917;
+  --charcoal-deep: #141210;
+  --paper: #ede8e0;
+  --oxblood: #6b1f1f;
+  --oxblood-bright: #8b2a2a;
+  --ochre: #b8860b;
+  --muted: #a69c8e;
+  --line: rgba(237, 232, 224, 0.14);
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--charcoal);
+  color: var(--paper);
+  font-family: 'Archivo', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: 'Oswald', sans-serif;
 }
 
 .focus-ring:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--ochre);
   outline-offset: 2px;
 }
 
