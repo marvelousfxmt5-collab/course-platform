@@ -1,5 +1,7 @@
 # Course Platform — Setup Guide
 
+
+
 A one-time-payment course website. Next.js + Supabase (auth/database) +
 Paystack (payment) + Cloudflare R2 (video hosting).
 
