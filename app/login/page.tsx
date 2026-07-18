@@ -20,21 +20,26 @@ export default function LoginPage() {
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
-    setLoading(false)
-
     if (error) {
+      setLoading(false)
       setError(error.message)
       return
     }
 
-    router.push('/dashboard')
+    const res = await fetch('/api/whoami')
+    const { isAdmin } = await res.json()
+
+    setLoading(false)
+    router.push(isAdmin ? '/admin' : '/dashboard')
     router.refresh()
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--charcoal)] px-6 text-[var(--paper)]">
       <div className="w-full max-w-sm">
-        <h1 className="mb-8 text-2xl font-bold">Log in</h1>
+        <h1 className="mb-8 font-display text-2xl font-bold uppercase tracking-wide">
+          Log In
+        </h1>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -47,7 +52,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="focus-ring w-full rounded-lg border border-black/15 px-4 py-2.5"
+              className="focus-ring w-full border border-[var(--line)] bg-transparent px-4 py-2.5 text-[var(--paper)]"
             />
           </div>
           <div>
@@ -60,24 +65,24 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="focus-ring w-full rounded-lg border border-black/15 px-4 py-2.5"
+              className="focus-ring w-full border border-[var(--line)] bg-transparent px-4 py-2.5 text-[var(--paper)]"
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-400">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="focus-ring w-full rounded-full bg-[var(--accent)] py-3 font-semibold text-white hover:bg-[var(--accent-dark)] transition-colors disabled:opacity-60"
+            className="focus-ring w-full bg-[var(--oxblood)] py-3 font-display font-semibold uppercase tracking-widest text-[var(--paper)] hover:bg-[var(--oxblood-bright)] transition-colors disabled:opacity-60"
           >
-            {loading ? 'Logging in…' : 'Log in'}
+            {loading ? 'Logging in…' : 'Log In'}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-[var(--muted)]">
           Don't have an account?{' '}
-          <Link href="/signup" className="font-medium text-[var(--ink)] underline">
+          <Link href="/signup" className="font-medium text-[var(--paper)] underline">
             Sign up
           </Link>
         </p>
