@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient, createAdminClient } from '@/lib/supabase-server'
+import SignOutButton from '@/components/SignOutButton'
 
 export default async function AdminLayout({
   children,
@@ -42,12 +43,15 @@ export default async function AdminLayout({
             </Link>
           </div>
         </div>
-        <Link
-          href="/"
-          className="focus-ring border border-[var(--paper)] px-4 py-1.5 text-xs font-medium uppercase tracking-widest hover:bg-[var(--paper)] hover:text-[var(--charcoal)] transition-colors"
-        >
-          View Site
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="focus-ring border border-[var(--paper)] px-4 py-1.5 text-xs font-medium uppercase tracking-widest hover:bg-[var(--paper)] hover:text-[var(--charcoal)] transition-colors"
+          >
+            View Site
+          </Link>
+          <SignOutButton />
+        </div>
       </nav>
 
       <div className="flex gap-6 border-b border-[var(--line)] px-6 py-3 text-xs font-semibold uppercase tracking-widest text-[var(--muted)] md:hidden">
