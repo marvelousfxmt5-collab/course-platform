@@ -10,7 +10,7 @@ export default async function AdminEnrollmentsPage() {
     .order('created_at', { ascending: false })
 
   // Look up emails for each user_id via Supabase auth admin API
-  const userIds = [...new Set((purchases || []).map((p) => p.user_id))]
+  const userIds = Array.from(new Set((purchases || []).map((p) => p.user_id)))
   const emailMap: Record<string, string> = {}
 
   for (const userId of userIds) {
@@ -67,4 +67,4 @@ export default async function AdminEnrollmentsPage() {
       </div>
     </div>
   )
-        }
+}
